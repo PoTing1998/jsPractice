@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="">
+
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        .main-box {
+            margin: 50px auto;
+            width: 600px;
+            padding: 50px;
+            box-shadow: 5px 5px 10px #999;
+            border: 1px solid #fff;
+            text-align: center;
+        }
+
+        .center {
+            margin: 20px auto;
+            width: 300px;
+            height: 50px;
+            box-shadow: 5px 5px 10px #999;
+            border: 1px solid #fff;
+            text-align: center;
+        }
+
+        #btn1 {
+            color: white;
+            background-color: #fb3131;
+        }
+
+        #btn2 {
+            color: black;
+            background-color: #55fefe;
+        }
+
+        #btn3 {
+            float: right;
+            color: white;
+            background-color: blue;
+        }
+
+        #title {
+            text-align: left;
+        }
+
+        #btn1:active {
+            color: black;
+        }
+
+
+        #btn2:active {
+            color: white;
+        }
+
+
+        #btn3:active {
+            color: black;
+        }
+
+        p {
+            font-size: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="main-box">
+        <h1>猜數字遊戲</h1>
+        <!-- 重新開始遊戲 -->
+        <input type="button" name="NumberRender" id="btn3" value="重啟遊戲" />
+        <br>
+        <p id="title">玩家猜數字</p>
+        <!-- 玩家輸入框 -->
+        <div id="input">
+            <input type="text" size="10" id="num1" maxlength="1" onchange="setArryValue(0)">
+            <input type="text" size="10" id="num2" maxlength="1" onchange="setArryValue(1)">
+            <input type="text" size="10" id="num3" maxlength="1" onchange="setArryValue(2)">
+            <input type="text" size="10" id="num4" maxlength="1" onchange="setArryValue(3)">
+            <input type="text" size="10" id="num5" maxlength="1" onchange="setArryValue(4)">
+        </div>
+        <br>
+        <!-- 檢查結果 -->
+        <button class="btn1" id="btn1">檢視猜測結果</button>
+        <div class="center" id="lbl"></div>
+        <!-- 莊家的答案 -->
+        <input type="button" name="NumberRender" id="btn2" value="顯示莊家號碼" />
+        <input type="text" size="20" id="answer">
+
+
+    </div>
+    <br>
+    <script>
+
+        // 用來儲存玩家輸入框的值
+        var num = [];
+        // 用來儲存莊家的答案的值
+        var answerArr = [];
+        // 網頁載入完畢才會執行
+        document.ready = function (callback) {
+        }
+        //第一個 欄位開始輸入
+        window.onload = function () {
+            document.getElementById("num1").focus();
+        }
+        //使用button.click事件
+        var oBtn = document.getElementById("btn3");
+        oBtn.addEventListener("click", clean);
+        //檢測結果事件
+        var mBtn = document.getElementById("btn1");
+        mBtn.addEventListener("click", message);
+        //莊家號碼事件
+        var aBtn = document.getElementById("btn2");
+        aBtn.addEventListener("click", showAnswer)
+
+
+        /**將指定欄位的值更新至array */
+        function setArryValue(index) {
+            var id = "num" + (index + 1);
+            var currentValue = document.getElementById(id).value;
+
+            // 先檢查是否重複，若重複就警告，並不加入array
+            if (num.includes(currentValue)) {
+                alert('請勿輸入重複數字');
+                document.getElementById('num' + (index + 1)).value = '';
+                document.getElementById('num' + (index + 1)).focus();
+                return;
+            }
+
+            // 通過驗證，那就更新array
+            num[index] = currentValue;
+
+        }
+
+        /**清空欄位 */
+        function clean() {
+            for (var i = 0; i < 5; i++) {
+                var id = "num" + (i + 1);
+                document.getElementById(id).value = '';
+            }
+            document.getElementById("lbl").innerHTML = "";
+            document.getElementById("answer").value = '';
+            num = [];
+            answerArr = [];
+        }
+
+        /**檢視猜測結果 */
+        function message() {
+
+            // 設定陣列值
+            for (var i = 0; i < 5; i++) {
+                var id = "num" + (i + 1);
+                num[i] = document.getElementById(id).value;
+            }
+            // 排序
+            num.sort();
+             //檢查欄位是否齊全
+            if (num.includes("")) {
+                alert("請將輸入格填滿");
+                return;
+            }
+
+            // 產生亂碼
+            while (answerArr.length < 5) {
+                //產生亂數
+                var rnd = Math.floor(Math.random() * 9 + 1).toString();
+                // 檢查是否有重複
+                // 用一般array，但每次add前要先檢查是否有重複，沒重複才add進去
+                if (!answerArr.includes(rnd)) {
+                    answerArr.push(rnd);
+                }
+            }
+           
+
+            console.log(num)
+            console.log(answerArr);
+
+
+            //比對取交集 顯示答案
+            let result = num.filter((e) => answerArr.includes(e));
+
+            result.sort();
+
+            document.getElementById("lbl").innerHTML = `您猜的數字有${result}<br/>共猜對${result.length}個數字`
+
+        }
+
+        /**檢查是否有重複 */
+        function isRepeat(rnd) {
+            return answerArr.includes(rnd);
+        }
+
+        /**設定莊家號碼 */
+        function showAnswer() {
+            // 取得文字
+            var answerStr = answerArr.sort().join(',');
+            // 設定莊家號碼
+            document.getElementById("answer").value = `莊家的數字${answerStr}`;
+
+
+        }
+
+    </script>
+</body>
+</html>
